@@ -6,6 +6,10 @@ import reportWebVitals from './reportWebVitals'
 import { Provider } from 'react-redux'
 import { persistor, store } from './store/store'
 import { PersistGate } from 'redux-persist/integration/react'
+import { getTodos } from './store/action-creators/todo'
+import { Dispatch } from 'redux'
+
+(store.dispatch as Dispatch<any>)(getTodos()) // a crutch to load initial data from server
 
 ReactDOM.render(
   <React.StrictMode>

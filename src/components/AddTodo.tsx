@@ -2,15 +2,23 @@ import React from 'react';
 import { InputGroup, Button, FormControl } from 'react-bootstrap'
 import { useDispatch } from 'react-redux';
 import { useTypedSelector } from '../hooks/useTypedSelector';
-import { inputTodoText } from '../store/action-creators/todo';
+import { createTodo, inputTodoText } from '../store/action-creators/todo';
 
 export const AddTodo: React.FC = () => {
   const {addTodo} = useTypedSelector(state => state.todo)
   const dispatch = useDispatch()
   
-  const OnTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newText = event.currentTarget.value
     dispatch(inputTodoText(newText))
+  }
+
+  const onAddClick = () => dispatch(createTodo(addTodo.text))
+
+  const onKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      dispatch(createTodo(addTodo.text))
+    }
   }
 
   return (
@@ -20,10 +28,14 @@ export const AddTodo: React.FC = () => {
         aria-label="What to do?"
         aria-describedby="basic-addon1"
         value={addTodo.text}
-        onChange={OnTextChange}
+        onChange={onTextChange}
+        onKeyPress={onKeyPress}
       />
       <InputGroup.Append>
-        <Button variant="outline-primary">Add</Button>
+        <Button 
+          variant="outline-primary"
+          onClick={onAddClick}
+        >Add</Button>
       </InputGroup.Append>
     </InputGroup>
   )

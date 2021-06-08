@@ -1,30 +1,82 @@
+export interface TodoModel {
+    id: string,
+    text: string,
+    isCompleted: boolean
+}
+
 export enum TodoFilter {
     ALL = 'ALL',
     COMPLETE = 'COMPLETE',
-    INCOMPLETE = 'INCOMPLETE',
+    INCOMPLETE = 'INCOMPLETE'
+}
+
+export enum TodoCompleteButtonState {
+    COMPLETE = 'COMPLETE',
+    INCOMPLETE = 'INCOMPLETE'
 }
 
 export interface TodoState {
     menu: {
-        filterBy: TodoFilter,
-        todosCount: number
+        filterBy: TodoFilter
     },
     addTodo: {
-        text: string,
-        loading: boolean
+        text: string
     },
     todos: {
-        loading: boolean,
-        items: any[]
+        items: TodoModel[]
     },
-    error: string | null
+    error: string | null,
+    loading: boolean
 }
 
 export enum TodoActionType {
+    GET_TODOS = 'GET_TODOS',
+    GET_TODOS_SUCCESS = 'GET_TODOS_SUCCESS',
+    GET_TODOS_ERROR = 'GET_TODOS_ERROR',
+
     INPUT_TODO_TEXT = 'INPUT_TODO_TEXT',
+    SELECTED_TODO_FILTER = 'SELECTED_TODO_FILTER',
+
     CREATE_TODO = 'CREATE_TODO',
     CREATE_TODO_SUCCESS = 'CREATE_TODO_SUCCESS',
-    CREATE_TODO_ERROR = 'CREATE_TODO_ERROR'
+    CREATE_TODO_ERROR = 'CREATE_TODO_ERROR',
+
+    UPDATE_TODO = 'UPDATE_TODO',
+
+    UPDATE_TODOS = 'UPDATE_TODOS',
+    UPDATE_TODOS_SUCCESS = 'UPDATE_TODOS_SUCCESS',
+    UPDATE_TODOS_ERROR = 'UPDATE_TODOS_ERROR',
+
+    POST_TODO_UPDATE = 'POST_TODO_UPDATE',
+    POST_TODO_UPDATE_SUCCESS = 'POST_TODO_UPDATE_SUCCESS',
+    POST_TODO_UPDATE_ERROR = 'POST_TODO_UPDATE_ERROR',
+
+    REMOVE_TODO = 'REMOVE_TODO',
+    REMOVE_TODO_SUCCESS = 'REMOVE_TODO_SUCCESS',
+    REMOVE_TODO_ERROR = 'REMOVE_TODO_ERROR',
+
+    REMOVE_TODOS = 'REMOVE_TODOS',
+    REMOVE_TODOS_SUCCESS = 'REMOVE_TODOS_SUCCESS',
+    REMOVE_TODOS_ERROR = 'REMOVE_TODOS_ERROR'
+}
+
+export interface GetTodosAction {
+    type: TodoActionType.GET_TODOS
+}
+
+export interface GetTodosSuccessAction {
+    type: TodoActionType.GET_TODOS_SUCCESS,
+    todos: TodoModel[]
+}
+
+export interface GetTodosErrorAction {
+    type: TodoActionType.GET_TODOS_ERROR,
+    error: string
+}
+
+export interface SelectedTodoFilterAction {
+    type: TodoActionType.SELECTED_TODO_FILTER,
+    filter: TodoFilter
 }
 
 export interface InputTodoTextAction {
@@ -38,7 +90,7 @@ export interface CreateTodoAction {
 
 export interface CreateTodoSuccessAction {
     type: TodoActionType.CREATE_TODO_SUCCESS
-    createdTodo: any
+    createdTodo: TodoModel
 }
 
 export interface CreateTodoErrorAction {
@@ -46,4 +98,76 @@ export interface CreateTodoErrorAction {
     error: string
 }
 
-export type TodoAction = InputTodoTextAction | CreateTodoAction | CreateTodoSuccessAction | CreateTodoErrorAction
+export interface UpdateTodoAction {
+    type: TodoActionType.UPDATE_TODO,
+    index: number,
+    newText: string | null,
+    newIsCompleted: boolean | null
+}
+
+export interface PostTodoUpdateAction {
+    type: TodoActionType.POST_TODO_UPDATE
+}
+
+export interface PostTodoUpdateSuccessAction {
+    type: TodoActionType.POST_TODO_UPDATE_SUCCESS
+    index: number
+    model: TodoModel
+}
+
+export interface PostTodoUpdateErrorAction {
+    type: TodoActionType.POST_TODO_UPDATE_ERROR
+    id: string
+    error: string
+}
+
+export interface RemoveTodoAction {
+    type: TodoActionType.REMOVE_TODO
+}
+
+export interface RemoveTodoSuccessAction {
+    type: TodoActionType.REMOVE_TODO_SUCCESS
+    index: number
+}
+
+export interface RemoveTodoErrorAction {
+    type: TodoActionType.REMOVE_TODO_ERROR
+    error: string
+}
+
+export interface RemoveTodosAction {
+    type: TodoActionType.REMOVE_TODOS
+}
+
+export interface RemoveTodosSuccessAction {
+    type: TodoActionType.REMOVE_TODOS_SUCCESS
+    todos: TodoModel[]
+}
+
+export interface RemoveTodosErrorAction {
+    type: TodoActionType.REMOVE_TODOS_ERROR
+    error: string
+}
+
+export interface UpdateTodosAction {
+    type: TodoActionType.UPDATE_TODOS
+}
+
+export interface UpdateTodosSuccessAction {
+    type: TodoActionType.UPDATE_TODOS_SUCCESS
+    todos: TodoModel[]
+}
+
+export interface UpdateTodosErrorAction {
+    type: TodoActionType.UPDATE_TODOS_ERROR
+    error: string
+}
+
+export type TodoAction = InputTodoTextAction | SelectedTodoFilterAction |
+    GetTodosAction | GetTodosSuccessAction | GetTodosErrorAction | 
+    CreateTodoAction | CreateTodoSuccessAction | CreateTodoErrorAction | 
+    UpdateTodoAction | 
+    PostTodoUpdateAction | PostTodoUpdateSuccessAction | PostTodoUpdateErrorAction |
+    UpdateTodosAction | UpdateTodosSuccessAction | UpdateTodosErrorAction |
+    RemoveTodoAction | RemoveTodoSuccessAction | RemoveTodoErrorAction |
+    RemoveTodosAction | RemoveTodosSuccessAction | RemoveTodosErrorAction
