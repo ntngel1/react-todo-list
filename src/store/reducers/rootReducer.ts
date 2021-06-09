@@ -4,9 +4,9 @@ import storage from 'redux-persist/lib/storage'
 import { todoReducer } from './todoReducer';
 
 const persistConfig = {
-    key: 'root',
+    key: 'todo',
     storage,
-    whitelist: ['addTodo', 'menu']
+    whitelist: ['todo']
 }
 
 const reducer = combineReducers({

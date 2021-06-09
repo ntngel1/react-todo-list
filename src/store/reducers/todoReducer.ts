@@ -48,6 +48,10 @@ export const todoReducer = (state: TodoState = initialState, action: TodoAction)
         case TodoActionType.GET_TODOS:
             return {
                 ...state,
+                todos: {
+                    items: []
+                },
+                editingTodo: null,
                 loading: true,
                 error: {
                     text: null,
