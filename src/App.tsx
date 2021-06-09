@@ -8,6 +8,7 @@ import { postUpdateTodo, updateTodo, removeTodo, selectedTodoFilter, removeTodos
 import { useDispatch } from 'react-redux'
 import { TodoFilter, TodoModel } from './types/todo'
 import { ErrorModal } from './components/ErrorModal'
+import { LoaderModal } from './components/LoaderModel'
 
 const App: React.FC = () => {
   const {todos, loading, error, menu} = useTypedSelector(state => state.todo)
@@ -129,6 +130,7 @@ const App: React.FC = () => {
         showRetryButton={error.retryAction != undefined} 
         onRetryClicked={error.retryAction}
       />
+      <LoaderModal show={loading}/>
     </>
   )
 }
