@@ -6,7 +6,7 @@ import { todoReducer } from './todoReducer';
 const persistConfig = {
     key: 'root',
     storage,
-    whitelist: ['todo']
+    whitelist: ['addTodo', 'menu']
 }
 
 const reducer = combineReducers({

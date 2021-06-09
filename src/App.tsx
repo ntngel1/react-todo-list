@@ -4,12 +4,13 @@ import { AddTodo } from './components/AddTodo'
 import { Todo } from './components/Todo'
 import { Menu } from './components/Menu'
 import { useTypedSelector } from './hooks/useTypedSelector'
-import { postUpdateTodo, updateTodo, getTodos, removeTodo, selectedTodoFilter, removeTodos, updateTodosIsCompleted } from './store/action-creators/todo'
+import { postUpdateTodo, updateTodo, removeTodo, selectedTodoFilter, removeTodos, updateTodosIsCompleted, closeErrorModal } from './store/action-creators/todo'
 import { useDispatch } from 'react-redux'
-import { TodoCompleteButtonState, TodoFilter, TodoModel } from './types/todo'
+import { TodoFilter, TodoModel } from './types/todo'
+import { ErrorModal } from './components/ErrorModal'
 
 const App: React.FC = () => {
-  const {todos, loading, menu} = useTypedSelector(state => state.todo)
+  const {todos, loading, error, menu} = useTypedSelector(state => state.todo)
   const dispatch = useDispatch()
 
   const onTodoCheckedChange = (id: string) => (isChecked: boolean) => {
@@ -92,7 +93,7 @@ const App: React.FC = () => {
   const displayedTodos = todos.items.filter(displayedTodosFilter)
 
   return (
-    <div>
+    <>
       <Container fluid="md">
         <Menu
           todosCount={displayedTodos.length}
@@ -119,7 +120,16 @@ const App: React.FC = () => {
           })}
         </Row>
       </Container>
-    </div>
+      <ErrorModal 
+        error={error.text ?? ''}
+        showModal={error.text != null} 
+        hideCloseButton={error.hideCloseButton}
+        handleClose={() => dispatch(closeErrorModal())}
+        onCloseClicked={error.closeAction} 
+        showRetryButton={error.retryAction != undefined} 
+        onRetryClicked={error.retryAction}
+      />
+    </>
   )
 }
 

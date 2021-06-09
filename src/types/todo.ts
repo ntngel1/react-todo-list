@@ -25,7 +25,13 @@ export interface TodoState {
     todos: {
         items: TodoModel[]
     },
-    error: string | null,
+    editingTodo: TodoModel | null
+    error: {
+        hideCloseButton: boolean,
+        text: string | null,
+        retryAction?: () => void,
+        closeAction?: () => void
+    },
     loading: boolean
 }
 
@@ -36,6 +42,7 @@ export enum TodoActionType {
 
     INPUT_TODO_TEXT = 'INPUT_TODO_TEXT',
     SELECTED_TODO_FILTER = 'SELECTED_TODO_FILTER',
+    CLOSE_ERROR_MODAL = 'CLOSE_ERROR_MODAL',
 
     CREATE_TODO = 'CREATE_TODO',
     CREATE_TODO_SUCCESS = 'CREATE_TODO_SUCCESS',
@@ -50,6 +57,7 @@ export enum TodoActionType {
     POST_TODO_UPDATE = 'POST_TODO_UPDATE',
     POST_TODO_UPDATE_SUCCESS = 'POST_TODO_UPDATE_SUCCESS',
     POST_TODO_UPDATE_ERROR = 'POST_TODO_UPDATE_ERROR',
+    POST_TODO_UPDATE_REVERT = 'POST_TODO_UPDATE_REVERT',
 
     REMOVE_TODO = 'REMOVE_TODO',
     REMOVE_TODO_SUCCESS = 'REMOVE_TODO_SUCCESS',
@@ -82,6 +90,10 @@ export interface SelectedTodoFilterAction {
 export interface InputTodoTextAction {
     type: TodoActionType.INPUT_TODO_TEXT
     newText: string
+}
+
+export interface CloseErrorModalAction {
+    type: TodoActionType.CLOSE_ERROR_MODAL
 }
 
 export interface CreateTodoAction {
@@ -117,8 +129,14 @@ export interface PostTodoUpdateSuccessAction {
 
 export interface PostTodoUpdateErrorAction {
     type: TodoActionType.POST_TODO_UPDATE_ERROR
-    id: string
     error: string
+    retryAction: () => void,
+    closeAction: () => void
+}
+
+export interface PostTodoUpdateRevertAction {
+    type: TodoActionType.POST_TODO_UPDATE_REVERT
+    index: number
 }
 
 export interface RemoveTodoAction {
@@ -163,11 +181,11 @@ export interface UpdateTodosErrorAction {
     error: string
 }
 
-export type TodoAction = InputTodoTextAction | SelectedTodoFilterAction |
+export type TodoAction = InputTodoTextAction | SelectedTodoFilterAction | CloseErrorModalAction |
     GetTodosAction | GetTodosSuccessAction | GetTodosErrorAction | 
     CreateTodoAction | CreateTodoSuccessAction | CreateTodoErrorAction | 
     UpdateTodoAction | 
-    PostTodoUpdateAction | PostTodoUpdateSuccessAction | PostTodoUpdateErrorAction |
+    PostTodoUpdateAction | PostTodoUpdateSuccessAction | PostTodoUpdateErrorAction | PostTodoUpdateRevertAction |
     UpdateTodosAction | UpdateTodosSuccessAction | UpdateTodosErrorAction |
     RemoveTodoAction | RemoveTodoSuccessAction | RemoveTodoErrorAction |
     RemoveTodosAction | RemoveTodosSuccessAction | RemoveTodosErrorAction

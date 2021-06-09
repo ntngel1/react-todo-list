@@ -10,7 +10,12 @@ const initialState: TodoState = {
     todos: {
         items: []
     },
-    error: null,
+    editingTodo: null,
+    error: {
+        hideCloseButton: false,
+        text: null,
+        retryAction: undefined
+    },
     loading: false
 }
 
@@ -32,10 +37,23 @@ export const todoReducer = (state: TodoState = initialState, action: TodoAction)
                     text: action.newText
                 }
             }
+        case TodoActionType.CLOSE_ERROR_MODAL:
+            return {
+                ...state,
+                error: {
+                    text: null,
+                    hideCloseButton: false
+                }
+            }
         case TodoActionType.GET_TODOS:
             return {
                 ...state,
-                loading: true
+                loading: true,
+                error: {
+                    text: null,
+                    hideCloseButton: false,
+                    retryAction: undefined
+                }
             }
         case TodoActionType.GET_TODOS_SUCCESS:
             return {
@@ -50,7 +68,10 @@ export const todoReducer = (state: TodoState = initialState, action: TodoAction)
             return {
                 ...state,
                 loading: false,
-                error: action.error
+                error: {
+                    ...state.error,
+                    text: action.error
+                }
             }
         case TodoActionType.CREATE_TODO:
             return {
@@ -77,7 +98,10 @@ export const todoReducer = (state: TodoState = initialState, action: TodoAction)
             return {
                 ...state,
                 loading: false,
-                error: action.error
+                error: {
+                    ...state.error,
+                    text: action.error 
+                }
             }
         case TodoActionType.UPDATE_TODO: {
             const currentItem = state.todos.items[action.index]
@@ -90,7 +114,8 @@ export const todoReducer = (state: TodoState = initialState, action: TodoAction)
                         {id: currentItem.id, text: action.newText ?? currentItem.text, isCompleted: action.newIsCompleted ?? currentItem.isCompleted},
                         ...state.todos.items.slice(action.index + 1)
                     ]
-                }
+                },
+                editingTodo: state.editingTodo ?? currentItem
             }
         }
         case TodoActionType.POST_TODO_UPDATE: 
@@ -102,6 +127,7 @@ export const todoReducer = (state: TodoState = initialState, action: TodoAction)
             return {
                 ...state,
                 loading: false,
+                editingTodo: null,
                 todos: {
                     ...state.todos,
                     items: [
@@ -112,11 +138,34 @@ export const todoReducer = (state: TodoState = initialState, action: TodoAction)
                 }
             }
         case TodoActionType.POST_TODO_UPDATE_ERROR: 
-            // TODO: Display error with retry button
             return {
                 ...state,
                 loading: false,
-                error: action.error
+                error: {
+                    hideCloseButton: false,
+                    text: action.error,
+                    retryAction: action.retryAction,
+                    closeAction: action.closeAction
+                }
+            }
+        case TodoActionType.POST_TODO_UPDATE_REVERT:
+            return {
+                ...state,
+                todos: {
+                    ...state.todos,
+                    items: [
+                        ...state.todos.items.slice(0, action.index),
+                        state.editingTodo!!,
+                        ...state.todos.items.slice(action.index + 1)
+                    ]
+                },
+                editingTodo: null,
+                error: {
+                    hideCloseButton: false,
+                    text: null,
+                    retryAction: undefined,
+                    closeAction: undefined
+                }
             }
         case TodoActionType.REMOVE_TODO:
             return {
@@ -139,7 +188,10 @@ export const todoReducer = (state: TodoState = initialState, action: TodoAction)
             return {
                 ...state,
                 loading: false,
-                error: action.error
+                error: {
+                    ...state.error,
+                    text: action.error 
+                }
             }
         case TodoActionType.REMOVE_TODOS:
             return {
@@ -159,7 +211,10 @@ export const todoReducer = (state: TodoState = initialState, action: TodoAction)
             return {
                 ...state,
                 loading: false,
-                error: action.error
+                error: {
+                    ...state.error,
+                    text: action.error 
+                }
             }
         case TodoActionType.UPDATE_TODOS:
             return {
@@ -179,7 +234,10 @@ export const todoReducer = (state: TodoState = initialState, action: TodoAction)
             return {
                 ...state,
                 loading: false,
-                error: action.error
+                error: {
+                    ...state.error,
+                    text: action.error 
+                }
             }
         default:
             return state

@@ -14,7 +14,7 @@ export const getTodos = () => {
                 dispatch({type: TodoActionType.GET_TODOS_ERROR, error: response.data.errorMessage!!})
             }
         } catch (e) {
-            dispatch({type: TodoActionType.GET_TODOS_ERROR, error: 'Error while loading todos'})
+            dispatch({type: TodoActionType.GET_TODOS_ERROR, error: e.response.data.errorMessage})
         }
     } 
 }
@@ -22,6 +22,12 @@ export const getTodos = () => {
 export const inputTodoText = (newText: string) => {
     return (dispatch: Dispatch<TodoAction>) => {
         dispatch({type: TodoActionType.INPUT_TODO_TEXT, newText: newText})
+    }
+}
+
+export const closeErrorModal = () => {
+    return (dispatch: Dispatch<TodoAction>) => {
+        dispatch({type: TodoActionType.CLOSE_ERROR_MODAL})
     }
 }
 
@@ -36,7 +42,7 @@ export const createTodo = (text: string) => {
                 dispatch({type: TodoActionType.CREATE_TODO_ERROR, error: response.data.errorMessage!!})
             }
         } catch (e) {
-            dispatch({type: TodoActionType.CREATE_TODO_ERROR, error: 'Error occurred while creating todo'})
+            dispatch({type: TodoActionType.CREATE_TODO_ERROR, error: e.response.data.errorMessage})
         }
     }
 }
@@ -50,21 +56,33 @@ export const updateTodo = (id: string, text: string | null, isCompleted: boolean
 }
 
 export const postUpdateTodo = (id: string) => {
-    return async (dispatch: Dispatch<TodoAction>, getState: () => RootState) => {
+    return async (dispatch: Dispatch<any>, getState: () => RootState) => {
         try {
+            console.log('postUpdateTodo with id = ' + id)
             dispatch({type: TodoActionType.POST_TODO_UPDATE})
             const {todo} = getState()
-            const index = todo.todos.items.findIndex((item) => item.id === id)
+            const index = todo.todos.items.findIndex((item) => item.id == id)
             const todoItem = todo.todos.items[index]
             const response = await updateTodoApi(todoItem.id, todoItem.text, todoItem.isCompleted)
             if (response.data.ok) {
                 dispatch({type: TodoActionType.POST_TODO_UPDATE_SUCCESS, index: index, model: response.data.content!!})
             } else {
-                dispatch({type: TodoActionType.POST_TODO_UPDATE_ERROR, id: id, error: response.data.errorMessage!!})
+                dispatch({
+                    type: TodoActionType.POST_TODO_UPDATE_ERROR, 
+                    error: response.data.errorMessage!!,
+                    retryAction: () => dispatch(postUpdateTodo(id)),
+                    closeAction: () => dispatch({type: TodoActionType.POST_TODO_UPDATE_REVERT, index: index})
+                })
             }
         } catch (e) {
             const {todo} = getState()
-            dispatch({type: TodoActionType.POST_TODO_UPDATE_ERROR, id: id, error: 'Error while updating todo'})
+            const index = todo.todos.items.findIndex((item) => item.id == id)
+            dispatch({
+                type: TodoActionType.POST_TODO_UPDATE_ERROR,
+                error: e.response.data.errorMessage,
+                retryAction: () => dispatch(postUpdateTodo(id)),
+                closeAction: () => dispatch({type: TodoActionType.POST_TODO_UPDATE_REVERT, index: index})
+            })
         }
     }
 }
@@ -82,7 +100,7 @@ export const removeTodo = (id: string) => {
                 dispatch({type: TodoActionType.REMOVE_TODO_ERROR, error: response.data.errorMessage!!})
             }
         } catch (e) {
-            dispatch({type: TodoActionType.REMOVE_TODO_ERROR, error: 'Error while removing todo'})
+            dispatch({type: TodoActionType.REMOVE_TODO_ERROR, error: e.response.data.errorMessage})
         }
     }
 }
@@ -100,7 +118,7 @@ export const removeTodos = (filterByIsCompleted: boolean | null) => {
                 dispatch({type: TodoActionType.REMOVE_TODOS_ERROR, error: response.data.errorMessage!!})
             }
         } catch (e) {
-            dispatch({type: TodoActionType.REMOVE_TODOS_ERROR, error: 'Error while removing todos'})
+            dispatch({type: TodoActionType.REMOVE_TODOS_ERROR, error: e.response.data.errorMessage})
         }
     }
 }
@@ -125,7 +143,7 @@ export const updateTodosIsCompleted = (filterByIsCompleted: boolean | null, newI
                 dispatch({type: TodoActionType.UPDATE_TODOS_ERROR, error: response.data.errorMessage!!})
             }
         } catch (e) {
-            dispatch({type: TodoActionType.UPDATE_TODOS_ERROR, error: 'Error while updating todos'})
+            dispatch({type: TodoActionType.UPDATE_TODOS_ERROR, error: e.response.data.errorMessage})
         }
     }
 }
